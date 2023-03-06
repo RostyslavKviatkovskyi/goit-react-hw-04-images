@@ -5,6 +5,8 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { LoadMoreButton } from './Button/Button';
 import { Circles } from 'react-loader-spinner';
 import { Wrapper } from './AppStyled';
+// import { imagesAPI } from '../services/service-api';
+import { fetchApi } from '../services/service-api';
 
 export class App extends Component {
   state = {
@@ -13,6 +15,7 @@ export class App extends Component {
     status: '',
     error: null,
     page: 1,
+    totalImages: 0,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -21,22 +24,14 @@ export class App extends Component {
       prevState.page !== this.state.page
     ) {
       this.setState({ status: 'pending' });
-      fetch(
-        `https://pixabay.com/api/?q=${this.state.value}&page=${this.state.page}&key=30215084-a49b4b97181de8b711ff6b4da&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return Promise.reject(
-            new Error(`Not a valid request with title &{this.state.value}`)
-          );
-        })
+
+      fetchApi(this.state)
         .then(images =>
           this.setState(prevState => ({
             ...prevState,
             images: [...prevState.images, ...images.hits],
             status: 'resolved',
+            totalImages: images.total,
           }))
         )
         .catch(error => this.setState({ error, status: 'rejected' }));
@@ -44,11 +39,10 @@ export class App extends Component {
   }
 
   handleValueChange = value => {
-    this.setState({ images: [], value: value || '' });
+    this.setState({ images: [], value: value || '', page: 1, totalImages: 0 });
   };
 
   handlePageChange = e => {
-    e.preventDefault();
     this.setState(prevState => ({
       ...prevState,
       page: prevState.page + 1,
@@ -77,7 +71,7 @@ export class App extends Component {
           />
         )}
 
-        {this.state.images.length > 0 && (
+        {this.state.images.length < this.state.totalImages && (
           <LoadMoreButton editPage={this.handlePageChange} />
         )}
       </Wrapper>
