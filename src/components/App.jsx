@@ -39,12 +39,11 @@ export class App extends Component {
   }
 
   handleValueChange = value => {
-    this.setState({ images: [], value: value || '', page: 1, totalImages: 0 });
+    this.setState({ images: [], value: value, page: 1, totalImages: 0 });
   };
 
   handlePageChange = e => {
     this.setState(prevState => ({
-      ...prevState,
       page: prevState.page + 1,
     }));
   };
