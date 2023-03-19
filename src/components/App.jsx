@@ -29,7 +29,7 @@ export function App() {
   };
 
   useEffect(() => {
-    if (!images || !value) {
+    if (!value) {
       return;
     }
 
@@ -46,7 +46,7 @@ export function App() {
         setStatus('rejected');
       });
     console.log('after fetch');
-  }, [value, page, images]);
+  }, [value, page]);
 
   return (
     <Wrapper>
